@@ -58,6 +58,7 @@ optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr
 scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.5, verbose=True)
 
 epoch_plot_list = []
+training_plot_list = []
 validation_plot_list = []
 
 def train(epoch):
@@ -88,9 +89,18 @@ def train(epoch):
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.data.item()))
 
+    training_accuracy = 100. * correct / len(train_loader.dataset)
+
     #print('\nTraining set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
     #    training_loss / len(train_loader.dataset), correct, len(train_loader.dataset),
-    #    100. * correct / len(train_loader.dataset)))
+    #    100. * training_accuracy))
+
+    print("Training set: Average loss: %d, Accuracy: %d/%d (%d)" %
+          (training_loss / len(train_loader.dataset), correct, len(train_loader.dataset), training_accuracy))
+
+    training_plot_list.append(training_accuracy)
+
+
 
 def validation():
     model.eval()
@@ -118,11 +128,25 @@ def validation():
         validation_loss, correct, len(val_loader.dataset),
         100. * correct / len(val_loader.dataset)))
 
+    validation_plot_list.append(100. * correct / len(val_loader.dataset))
+
 
 if __name__ == '__main__':
     for epoch in range(1, args.epochs + 1):
+        epoch_plot_list.append(epoch)  # for plotting
+
         train(epoch)
         validation()
         model_file = 'model_' + str(epoch) + '.pth'
         torch.save(model.state_dict(), model_file)
         print('\nSaved model to ' + model_file + '. You can run `python evaluate.py --model' + model_file + '` to generate the Kaggle formatted csv file')
+
+# plotting the graphs
+import matplotlib.pyplot  as plt
+plt.plot(epoch_plot_list, validation_plot_list, label='validation')
+plt.plot(epoch_plot_list, training_plot_list, label='training')
+
+plt.title("Deep Convnet model")
+plt.xlabel("epoch")
+plt.ylabel("accuracy")
+plt.show()
