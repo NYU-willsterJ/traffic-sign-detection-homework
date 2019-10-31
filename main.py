@@ -33,9 +33,6 @@ if torch.cuda.is_available():
 else:
     use_gpu = False
 
-FloatTensor = torch.cuda.FloatTensor if use_gpu else torch.FloatTensor
-Tensor = FloatTensor
-
 
 ### Data Initialization and Loading
 from data import initialize_data, data_transforms # data.py in the same folder
@@ -44,11 +41,11 @@ initialize_data(args.data) # extracts the zip files, makes a validation set
 train_loader = torch.utils.data.DataLoader(
     datasets.ImageFolder(args.data + '/train_images',
                          transform=data_transforms),
-    batch_size=args.batch_size, shuffle=True, num_workers=1, pin_memory=use_gpu)
+    batch_size=args.batch_size, shuffle=True, num_workers=0)
 val_loader = torch.utils.data.DataLoader(
     datasets.ImageFolder(args.data + '/val_images',
                          transform=data_transforms),
-    batch_size=args.batch_size, shuffle=False, num_workers=1, pin_memory=use_gpu)
+    batch_size=args.batch_size, shuffle=False, num_workers=0)
 
 ### Neural Network and Optimizer
 # We define neural net in model.py so that it can be reused by the evaluate.py script
@@ -57,9 +54,11 @@ model = Net()
 if use_gpu:
     model.cuda()
 
-optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
 scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.5, verbose=True)
 
+epoch_plot_list = []
+validation_plot_list = []
 
 def train(epoch):
     model.train()
