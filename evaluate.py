@@ -29,7 +29,7 @@ model.eval()
 
 from data import data_transforms
 
-test_dir = args.data + '/test_images/test_images'
+test_dir = args.data + '/test_images'
 
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
