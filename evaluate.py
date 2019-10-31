@@ -29,7 +29,7 @@ model.eval()
 
 from data import data_transforms
 
-test_dir = args.data + '/test_images'
+test_dir = args.data + '/test_images/test_images'
 
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
@@ -54,7 +54,7 @@ for f in tqdm(os.listdir(test_dir)):
 output_file.close()
 
 print("Succesfully wrote " + args.outfile + ', you can upload this file to the kaggle '
-      'competition at https://www.kaggle.com/c/nyu-cv-fall-2018/')
+      'competition at https://www.kaggle.com/c/nyucvfall2019/')
         
 
 

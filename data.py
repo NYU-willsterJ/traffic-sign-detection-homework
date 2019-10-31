@@ -16,28 +16,22 @@ data_transforms = transforms.Compose([
 
 
 def initialize_data(folder):
-    train_zip = folder + '/train_images.zip'
-    test_zip = folder + '/test_images.zip'
-    if not os.path.exists(train_zip) or not os.path.exists(test_zip):
-        raise(RuntimeError("Could not find " + train_zip + " and " + test_zip
-              + ', please download them from https://www.kaggle.com/c/nyu-cv-fall-2018/data '))
-    # extract train_data.zip to train_data
-    train_folder = folder + '/train_images'
-    if not os.path.isdir(train_folder):
-        print(train_folder + ' not found, extracting ' + train_zip)
-        zip_ref = zipfile.ZipFile(train_zip, 'r')
-        zip_ref.extractall(folder)
-        zip_ref.close()
-    # extract test_data.zip to test_data
-    test_folder = folder + '/test_images'
-    if not os.path.isdir(test_folder):
-        print(test_folder + ' not found, extracting ' + test_zip)
-        zip_ref = zipfile.ZipFile(test_zip, 'r')
+
+    data_path = folder + 'nyucvfall2019.zip'
+    train_path = './train_images'
+    test_path = './test_images'
+    if not os.path.exists(data_path):
+        raise(RuntimeError("Could not find " + data_path + ", please download them from https://www.kaggle.com/c/nyucvfall2019/data"))
+
+    if not os.path.exists(train_path) or not os.path.exists(test_path):
+        print(train_path + " or " + test_path + " not found, extracting " + data_path)
+        zip_ref = zipfile.ZipFile(data_path, 'r')
         zip_ref.extractall(folder)
         zip_ref.close()
 
     # make validation_data by using images 00000*, 00001* and 00002* in each class
-    val_folder = folder + '/val_images'
+    train_folder = train_path + '/train_images'
+    val_folder = folder + 'val_images'
     if not os.path.isdir(val_folder):
         print(val_folder + ' not found, making a validation set')
         os.mkdir(val_folder)
