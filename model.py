@@ -5,6 +5,7 @@ import torch.nn.functional as F
 nclasses = 43 # GTSRB as 43 classes
 
 class Net(nn.Module):
+
     def __init__(self):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(3, 10, kernel_size=5)
@@ -20,4 +21,4 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return F.log_softmax(x)
+        return F.log_softmax(x, dim=1)
