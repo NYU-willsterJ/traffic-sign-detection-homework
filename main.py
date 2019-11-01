@@ -57,8 +57,9 @@ if use_gpu:
 optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
 # optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.5, verbose=True)
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, factor=0.3, verbose=True)
 
+# for plotting use
 epoch_plot_list = []
 training_plot_list = []
 validation_plot_list = []
@@ -89,18 +90,14 @@ def train(epoch):
         if batch_idx % args.log_interval == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.data.item()))
+                100. * batch_idx / len(train_loader), loss.data))
 
     training_accuracy = 100. * correct / len(train_loader.dataset)
 
     print('Training set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
         training_loss / len(train_loader.dataset), correct, len(train_loader.dataset), training_accuracy))
 
-    #print("Training set: Average loss: %d, Accuracy: %d/%d (%d)" %
-    #      (training_loss / len(train_loader.dataset), correct, len(train_loader.dataset), training_accuracy))
-
     training_plot_list.append(training_accuracy)
-
 
 
 def validation():
@@ -117,7 +114,7 @@ def validation():
                 target = target.cuda()
 
             output = model(data)
-            validation_loss += F.nll_loss(output, target, size_average=False).data.item() # sum up batch loss
+            validation_loss += F.nll_loss(output, target, size_average=False).data # sum up batch loss
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(target.data.view_as(pred)).cpu().sum()
 
@@ -143,7 +140,7 @@ if __name__ == '__main__':
         print('\nSaved model to ' + model_file + '. You can run `python evaluate.py --model' + model_file + '` to generate the Kaggle formatted csv file')
 
 # plotting the graphs
-import matplotlib.pyplot  as plt
+import matplotlib.pyplot as plt
 plt.plot(epoch_plot_list, validation_plot_list, label='validation')
 plt.plot(epoch_plot_list, training_plot_list, label='training')
 
