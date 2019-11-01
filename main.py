@@ -39,7 +39,7 @@ from data import initialize_data, data_transforms # data.py in the same folder
 initialize_data(args.data) # extracts the zip files, makes a validation set
 
 train_loader = torch.utils.data.DataLoader(
-    datasets.ImageFolder(args.data + '/train_images',
+    datasets.ImageFolder(args.data + '/train_images/train_images',
                          transform=data_transforms),
     batch_size=args.batch_size, shuffle=True, num_workers=0)
 val_loader = torch.utils.data.DataLoader(
@@ -55,6 +55,8 @@ if use_gpu:
     model.cuda()
 
 optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
+# optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+
 scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.5, verbose=True)
 
 epoch_plot_list = []
@@ -91,12 +93,11 @@ def train(epoch):
 
     training_accuracy = 100. * correct / len(train_loader.dataset)
 
-    #print('\nTraining set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-    #    training_loss / len(train_loader.dataset), correct, len(train_loader.dataset),
-    #    100. * training_accuracy))
+    print('Training set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
+        training_loss / len(train_loader.dataset), correct, len(train_loader.dataset), training_accuracy))
 
-    print("Training set: Average loss: %d, Accuracy: %d/%d (%d)" %
-          (training_loss / len(train_loader.dataset), correct, len(train_loader.dataset), training_accuracy))
+    #print("Training set: Average loss: %d, Accuracy: %d/%d (%d)" %
+    #      (training_loss / len(train_loader.dataset), correct, len(train_loader.dataset), training_accuracy))
 
     training_plot_list.append(training_accuracy)
 

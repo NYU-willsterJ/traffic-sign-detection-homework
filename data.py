@@ -17,9 +17,9 @@ data_transforms = transforms.Compose([
 
 def initialize_data(folder):
 
-    data_path = folder + 'nyucvfall2019.zip'
-    train_path = './train_images'
-    test_path = './test_images'
+    data_path = folder + '/nyucvfall2019.zip'
+    train_path = folder + '/train_images/train_images'
+    test_path = folder + '/test_images/test_images'
     if not os.path.exists(data_path):
         raise(RuntimeError("Could not find " + data_path + ", please download them from https://www.kaggle.com/c/nyucvfall2019/data"))
 
@@ -30,8 +30,8 @@ def initialize_data(folder):
         zip_ref.close()
 
     # make validation_data by using images 00000*, 00001* and 00002* in each class
-    train_folder = train_path + '/train_images'
-    val_folder = folder + 'val_images'
+    train_folder = train_path
+    val_folder = folder + '/val_images'
     if not os.path.isdir(val_folder):
         print(val_folder + ' not found, making a validation set')
         os.mkdir(val_folder)
